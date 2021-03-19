@@ -34,12 +34,12 @@ signСontrolButtons.addEventListener("click", (e) => {
   if (e.target.tagName != "BUTTON") return;
   toggleVisibility(e.target);
 });
-let activeElement;
+let activeElement = notesButton;
 function toggleVisibility(element) {
   element.classList.toggle("btn-active");
   if (activeElement) {
     activeElement.classList.remove("btn-active");
   }
   activeElement = element;
-  activeElement.classList.add("btn-active"); //
+  activeElement.classList.add("btn-active");
 }
