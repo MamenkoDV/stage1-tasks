@@ -130,6 +130,7 @@ body {
 }
 .piano-key::before,
 .piano-key::after {
+  pointer-events: none;
   content: attr(data-note);
   position: absolute;
   width: 40px;

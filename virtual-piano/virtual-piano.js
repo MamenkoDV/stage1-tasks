@@ -41,13 +41,8 @@ signСontrolButtons.addEventListener("click", (e) => {
         element.classList.remove("piano-key-letter")
       );
 });
-//   pianoKeys.forEach((element) =>
-//     console.log(element.getAttribute("data-letter"))
-//   );
-//   pianoKeys.forEach((element) =>
-//     console.log(element.getAttribute("data-notes"))
-//   );
-let activeElement = notesButton;
+
+let activeElement = notesButton; //default state of app button  notes active
 function toggleVisibility(element, classForToggle) {
   if (activeElement) {
     activeElement.classList.remove(classForToggle);
@@ -55,4 +50,44 @@ function toggleVisibility(element, classForToggle) {
   activeElement = element;
   activeElement.classList.add(classForToggle);
 }
-function signKeys(element, classForToggle) {}
+
+// create audioplayer
+function playAudio(src) {
+  const audio = new Audio();
+  audio.src = src;
+  audio.currentTime = 0;
+  audio.play();
+}
+
+//piano functionality
+piano.addEventListener("click", (event) => {
+  let item = event.target;
+  if (!item) {
+    return;
+  }
+  if (item.classList.contains("piano-key")) {
+    pianoKeys.forEach((el) => {
+      if (el.classList.contains("piano-key-active")) {
+        el.classList.remove("piano-key-active");
+      }
+    });
+    item.classList.add("piano-key-active");
+  }
+});
+
+piano.addEventListener("click", (e) => {
+  let src = `/assets/audio/${e.target.dataset.note}.mp3`;
+  playAudio(src);
+});
+const keysLetter = pianoKeys.map((key) => key.dataset.letter).filter(Boolean);
+window.addEventListener("keydown", (e) => {
+  let keyLetter = e.code[3];
+  if (e.code.length > 4 || !keysLetter.includes(keyLetter)) {
+    return;
+  }
+  const keyNote = document.querySelector(
+    `.piano-key[data-letter=${keyLetter}]`
+  );
+  const src = `/assets/audio/${keyNote.dataset.note}.mp3`;
+  playAudio(src);
+});
