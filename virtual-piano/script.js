@@ -13,18 +13,6 @@ function toggleFullScreen() {
 }
 fullScreenButton.addEventListener("click", () => toggleFullScreen());
 
-//piano functionality
-// piano.addEventListener("click", (event) => {
-//   if (event.target.classList.contains("piano-key")) {
-//     pianoКeys.forEach((el) => {
-//       if (el.classList.contains("active")) {
-//         el.classList.remove("active");
-//       }
-//     });
-//     event.target.classList.add("active");
-//   }
-// });
-
 // show and hide letters and notes
 const lettersButton = document.querySelector(".btn-letters");
 const notesButton = document.querySelector(".btn-notes");
@@ -59,27 +47,9 @@ function playAudio(src) {
   audio.play();
 }
 //piano functionality
-// piano.addEventListener("click", (event) => {
-//   let item = event.target;
-//   if (!item) {
-//     return;
-//   }
-//   activateSelectedKey(item);
-// });
-
-// function activateSelectedKey(element) {
-//   element.classList.add("piano-key-active");
-//   pianoKeys.forEach((el) => {
-//     if (element.classList.contains("piano-key-active")) {
-//       element.classList.remove("piano-key-active");
-//     }
-//   });
-//   element.classList.add("piano-key-active");
-// }
 //play music by mousedown mouseup
 piano.addEventListener("mousedown", (e) => {
   let item = e.target;
-  console.log(item);
   item.classList.add("piano-key-active");
   item.classList.add("piano-key-active-pseudo");
   let src = `/assets/audio/${item.dataset.note}.mp3`;
@@ -91,36 +61,65 @@ piano.addEventListener("mouseup", (e) => {
   item.classList.remove("piano-key-active-pseudo");
 });
 //play music by keyboard
-const keysLetter = pianoKeys.map((key) => key.dataset.letter).filter(Boolean);
+const keysLetter = pianoKeys
+  .map((key) => "Key" + key.dataset.letter)
+  .filter(Boolean);
+
 window.addEventListener("keydown", (e) => {
-  let keyLetter = e.code[3];
+  let keyLetter = e.code;
+  if (!keysLetter.includes(keyLetter)) {
+    return;
+  }
   if (e.repeat === true) {
     return;
   }
-  if (e.code.length > 4 || !keysLetter.includes(keyLetter)) {
-    return;
-  }
   const keyNote = document.querySelector(
-    `.piano-key[data-letter=${keyLetter}]`
+    `.piano-key[data-letter=${keyLetter[3]}]`
   );
   keyNote.classList.add("piano-key-active");
   const src = `/assets/audio/${keyNote.dataset.note}.mp3`;
   playAudio(src);
 });
 window.addEventListener("keyup", (e) => {
+  if (e.code === null) return;
   let keyLetter = e.code[3];
   const keyNote = document.querySelector(
     `.piano-key[data-letter=${keyLetter}]`
   );
   keyNote.classList.remove("piano-key-active");
 });
+const activateKey = (event) => {
+  event.target.classList.add("piano-key-active");
+  event.target.classList.add("piano-key-active-pseudo");
+  let src = `/assets/audio/${event.target.dataset.note}.mp3`;
+  playAudio(src);
+};
 
-// piano.addEventListener("mouseup", (e) => {
-//   let item = e.target;
-//   item.classList.remove("piano-key-active");
-// });
+const deactivateKey = (event) => {
+  event.target.classList.remove("piano-key-active-pseudo");
+  event.target.classList.remove("piano-key-active");
+};
 
-// function removeTransition(el) {
-//   if (el.propertyName !== "transform") return;
-//   this.classList.remove("piano-key-active");
-// }
+const startCorrespondOver = (event) => {
+  if (event.target.classList.contains("piano-key")) {
+    event.target.classList.add("piano-key-active");
+    event.target.classList.add("piano-key-active-pseudo");
+  }
+
+  pianoKeys.forEach((elem) => {
+    elem.addEventListener("mouseover", activateKey);
+    elem.addEventListener("mouseout", deactivateKey);
+  });
+};
+
+const stopCorrespondOver = () => {
+  pianoKeys.forEach((elem) => {
+    elem.classList.remove("piano-key-active");
+    elem.classList.remove("piano-key-active-pseudo");
+    elem.removeEventListener("mouseover", activateKey);
+    elem.removeEventListener("mouseout", deactivateKey);
+  });
+};
+
+piano.addEventListener("mousedown", startCorrespondOver, false);
+piano.addEventListener("mouseup", stopCorrespondOver);
