@@ -58,36 +58,69 @@ function playAudio(src) {
   audio.currentTime = 0;
   audio.play();
 }
-
 //piano functionality
-piano.addEventListener("click", (event) => {
-  let item = event.target;
-  if (!item) {
-    return;
-  }
-  if (item.classList.contains("piano-key")) {
-    pianoKeys.forEach((el) => {
-      if (el.classList.contains("piano-key-active")) {
-        el.classList.remove("piano-key-active");
-      }
-    });
-    item.classList.add("piano-key-active");
-  }
-});
+// piano.addEventListener("click", (event) => {
+//   let item = event.target;
+//   if (!item) {
+//     return;
+//   }
+//   activateSelectedKey(item);
+// });
 
-piano.addEventListener("click", (e) => {
-  let src = `/assets/audio/${e.target.dataset.note}.mp3`;
+// function activateSelectedKey(element) {
+//   element.classList.add("piano-key-active");
+//   pianoKeys.forEach((el) => {
+//     if (element.classList.contains("piano-key-active")) {
+//       element.classList.remove("piano-key-active");
+//     }
+//   });
+//   element.classList.add("piano-key-active");
+// }
+//play music by mousedown mouseup
+piano.addEventListener("mousedown", (e) => {
+  let item = e.target;
+  console.log(item);
+  item.classList.add("piano-key-active");
+  item.classList.add("piano-key-active-pseudo");
+  let src = `/assets/audio/${item.dataset.note}.mp3`;
   playAudio(src);
 });
+piano.addEventListener("mouseup", (e) => {
+  let item = e.target;
+  item.classList.remove("piano-key-active");
+  item.classList.remove("piano-key-active-pseudo");
+});
+//play music by keyboard
 const keysLetter = pianoKeys.map((key) => key.dataset.letter).filter(Boolean);
 window.addEventListener("keydown", (e) => {
   let keyLetter = e.code[3];
+  if (e.repeat === true) {
+    return;
+  }
   if (e.code.length > 4 || !keysLetter.includes(keyLetter)) {
     return;
   }
   const keyNote = document.querySelector(
     `.piano-key[data-letter=${keyLetter}]`
   );
+  keyNote.classList.add("piano-key-active");
   const src = `/assets/audio/${keyNote.dataset.note}.mp3`;
   playAudio(src);
 });
+window.addEventListener("keyup", (e) => {
+  let keyLetter = e.code[3];
+  const keyNote = document.querySelector(
+    `.piano-key[data-letter=${keyLetter}]`
+  );
+  keyNote.classList.remove("piano-key-active");
+});
+
+// piano.addEventListener("mouseup", (e) => {
+//   let item = e.target;
+//   item.classList.remove("piano-key-active");
+// });
+
+// function removeTransition(el) {
+//   if (el.propertyName !== "transform") return;
+//   this.classList.remove("piano-key-active");
+// }
